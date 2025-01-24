@@ -30,7 +30,17 @@ function index(req, res, next) {
 
 function show(req, res) {
   const urlId = req.params.id;
-  const sql = "SELECT * FROM movies WHERE id = ?";
+  const sql = `SELECT movies.*, CAST(AVG(reviews.vote) as FLOAT) as vote_avg
+  FROM movies
+  LEFT JOIN reviews
+  ON reviews.movies_id = movies.id
+  WHERE movies.id = ? `;
+
+  const sqlReviews = `SELECT movies.*, CAST(AVG(reviews.vote) as FLOAT) as vote_avg
+  FROM movies
+  LEFT JOIN reviews
+  ON movies.id = reviews.movies_id
+  WHERE movies.id = ? `;
 
   connection.query(sql, [urlId], (err, movies) => {
     if (err) {
