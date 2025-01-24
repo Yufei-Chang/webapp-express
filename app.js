@@ -5,6 +5,7 @@ const cors = require("cors")
 // Pijio le rotte
 const router = require("./routes/movieRoute");
 const movieErr = require("./middleware/movieErr");
+const notFound = require('./middleware/notFound');
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -18,12 +19,10 @@ app.use(cors({
   origin: process.env.FRONTEND_URL
 }))
 
-// Middleware per rotte non esistenti
-app.use((req, res, next) => {
-    res.status(404).send("Dispersi nel mare delle lacrime");
-  });
-
 app.use(movieErr);
+
+// Middleware per rotte non esistenti
+app.use(notFound);
 
 app.listen(port, () => {
   console.log(`Pronto? Pronto?! Me stai a sentì? ${port}`)
