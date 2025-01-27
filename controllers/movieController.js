@@ -4,7 +4,7 @@ const connection = require("../db")
 function index(req, res, next) {
   // Ricerca per FILTRO - Prelevo query string params
   const filters = req.query;
-  console.log(filters);
+  // console.log(filters);
 
   let sql = "SELECT * FROM `movies`";
   const params = [];
@@ -29,15 +29,15 @@ function index(req, res, next) {
 }
 
 function show(req, res, next) {
-  const urlId = req.params.id;
+  const urlSlug = req.params.slug;
 
   const sql = `
-    SELECT movies.*, CAST(AVG(reviews.vote) as FLOAT) as vote_avg
-    FROM movies
-    LEFT JOIN reviews
-    ON reviews.movies_id = movies.id
-    WHERE movies.id = ? 
-  `;
+      SELECT movies.*, IFNULL(AVG(reviews.vote), 0) AS average_vote
+      FROM movies
+      LEFT JOIN reviews ON movies.id = reviews.movie_id
+      WHERE movies.slug = ?
+      GROUP BY movies.id;
+      `;
 
   const sqlReviews = `
     SELECT reviews:*
@@ -47,7 +47,7 @@ function show(req, res, next) {
     WHERE movies.id = ? 
   `;
 
-  connection.query(sql, [urlId], (err, results) => {
+  connection.query(sql, [urlSlug], (err, results) => {
     if (err) {
       return next(new Error(err.message));
     }
