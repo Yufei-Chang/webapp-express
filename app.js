@@ -7,6 +7,14 @@ const router = require("./routes/movieRoute");
 const movieErr = require("./middleware/movieErr");
 const notFound = require('./middleware/notFound');
 
+require("dotenv").config();
+// Rendo disponibile chiamata a server tramite cors
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+  })
+);
+
 app.use(express.static("public"));
 app.use(express.json());
 app.use("/movies", router);
